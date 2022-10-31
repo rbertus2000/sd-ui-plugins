@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0";
+const VERSION = "1.0.1";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -131,7 +131,7 @@ style.textContent = `
      
     function getSetup() {
         let stateObject = {
-            prompt: promptField.value,
+            prompt: getPrompts(),
             seed: seedField.value,
             random: randomSeedField.checked,
             model: stableDiffusionModelField.value,

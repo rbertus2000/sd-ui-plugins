@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.1";
+const VERSION = "1.0.2";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -130,8 +130,20 @@ style.textContent = `
     }
      
     function getSetup() {
+      let prompts = promptField.value;
+			if (prompts.trim() === '') {
+				return [''];
+			}
+		
+			prompts = prompts.split('\n');
+			prompts = prompts.map(prompt => prompt.trim());
+			prompts = prompts.filter(prompt => prompt !== '');
+			if (activeTags.length > 0) {
+				const promptTags = activeTags.map(x => x.name).join(", ");
+				prompts = prompts.map((prompt) => `${prompt}, ${promptTags}`);
+				}
         let stateObject = {
-            prompt: getPrompts(),
+            prompt: prompts,
             seed: seedField.value,
             random: randomSeedField.checked,
             model: stableDiffusionModelField.value,

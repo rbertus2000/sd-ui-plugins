@@ -127,11 +127,8 @@ style.textContent = `
         let minCharSize = 0;
         const stopSize = 1024 * 1; // ~ 1KBytes
         const testKey = 'testQuota';
-        const startTime = Date.now();
-        let runTime = startTime;
         let lastRunFailed = false;
         do {
-            runTime = Date.now() - startTime;
             let trySize = 1;
             try {
                 trySize = Math.ceil((maxCharSize - minCharSize) / 2) + minCharSize;

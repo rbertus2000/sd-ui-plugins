@@ -65,8 +65,8 @@ style.textContent = `
     background: rgb(177, 27, 0);
     cursor: pointer;
   }
-  .${ID_PREFIX}-usedspace {
-    width: 100%;
+  #${ID_PREFIX}-usedspace {
+    width: 180px;
     height: 1.5rem;
     display: inline-block;
     -webkit-appearance: none;

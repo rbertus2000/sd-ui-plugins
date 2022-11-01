@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.3";
+const VERSION = "1.0.4";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);

@@ -129,7 +129,7 @@ style.textContent = `
                 window.localStorage.setItem(testKey, '1'.repeat(trySize));
                 minCharSize = trySize;
                 lastRunFailed = false;
-            } catch (e) {
+            } catch {
                 maxCharSize = trySize - 1;
                 lastRunFailed = true;
             }

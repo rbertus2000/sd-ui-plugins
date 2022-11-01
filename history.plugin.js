@@ -326,6 +326,7 @@ style.textContent = `
         toggleHistory.id = `${ID_PREFIX}-togglehistoryButton`;
         toggleHistory.innerText = "show history";
         toggleHistory.classList.add(`${ID_PREFIX}-history-btn`);
+        toggleHistory.title = `V${VERSION}`;
         toggleHistory.addEventListener('click', toggleHistoryAction);
         buttonsContainer.appendChild(toggleHistory);
 
@@ -333,6 +334,7 @@ style.textContent = `
         save.id = `${ID_PREFIX}-savehistoryButton`;
         save.innerText = "save";
         save.classList.add(`${ID_PREFIX}-history-btn`);
+        save.title = `V${VERSION}`;
         save.addEventListener('click', saveHistoryItem);
         buttonsContainer.appendChild(save);
         

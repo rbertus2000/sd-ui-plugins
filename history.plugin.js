@@ -103,7 +103,46 @@ style.textContent = `
     editorInputs.appendChild(buttonsContainer);
      
     
-    
+    function getUsedSpace() {
+        let charCount = 0;
+        Object.keys(window.localStorage).forEach(function(key){
+            if (window.localStorage.hasOwnProperty(key)) {
+                charCount = key.length + window.localStorage.getItem(key).length + charCount;
+            }
+        });
+        return charCount;
+    }
+    function getFreeSpace() {
+        // The closer we are to the real size, the faster it returns.
+        let maxCharSize = 10485760; // ~10MBytes
+        let minCharSize = 2097152; // ~2Mbytes
+        const testKey = 'testQuota';
+        const timeout = 20 * 1000;
+        const startTime = Date.now();
+        let runTime = startTime;
+        let lastRunFailed = false;
+        do {
+            runTime = Date.now() = startTime;
+            let trySize = 1;
+            try {
+                trySize = Math.ceil((maxCharSize - minCharSize) / 2);
+                window.localStorage.setItem(testKey, '1'.repeat(trySize));
+                minCharSize = trySize;
+                lastRunFailed = false;
+            } catch (e) {
+                maxCharSize = trySize - 1;
+                lastRunFailed = true;
+            }
+        } while ((maxCharSize - minCharSize > 1) && runTime < timeout);
+        window.localStorage.removeItem(testKey);
+        if (runTime >= timeout) {
+            console.warn("Free space calculations may be off due to timeout.");
+        }
+        return minCharSize + testKey.length - (lastRunFailed ? 1 : 0);
+    }
+    function getTotalStorageSpace() {
+        return getFreeSpace() + getUsedSpace();
+    }
     
         
      

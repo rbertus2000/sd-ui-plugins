@@ -133,7 +133,7 @@ style.textContent = `
                 maxCharSize = trySize - 1;
                 lastRunFailed = true;
             }
-        } while ((maxCharSize - minCharSize > 1) && runTime < timeout);
+        } while ((maxCharSize - minCharSize > (1024 * 100)) && runTime < timeout);
         window.localStorage.removeItem(testKey);
         if (runTime >= timeout) {
             console.warn("Free space calculations may be off due to timeout.");

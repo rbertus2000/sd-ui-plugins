@@ -122,7 +122,7 @@ style.textContent = `
         let runTime = startTime;
         let lastRunFailed = false;
         do {
-            runTime = Date.now() = startTime;
+            runTime = Date.now() - startTime;
             let trySize = 1;
             try {
                 trySize = Math.ceil((maxCharSize - minCharSize) / 2);

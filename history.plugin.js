@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.2";
+const VERSION = "1.0.3";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -117,7 +117,7 @@ style.textContent = `
         let maxCharSize = 10485760; // ~10MBytes
         let minCharSize = 2097152; // ~2Mbytes
         const testKey = 'testQuota';
-        const timeout = 20 * 1000;
+        const timeout = 5 * 1000;
         const startTime = Date.now();
         let runTime = startTime;
         let lastRunFailed = false;
@@ -143,6 +143,18 @@ style.textContent = `
     function getTotalStorageSpace() {
         return getFreeSpace() + getUsedSpace();
     }
+
+    function formatBytes(bytes, decimals = 2) {
+			if (!+bytes) return '0 Bytes'
+		
+			const k = 1024
+			const dm = decimals < 0 ? 0 : decimals
+			const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+		
+			const i = Math.floor(Math.log(bytes) / Math.log(k))
+		
+			return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+		}
     
         
      
@@ -300,7 +312,8 @@ style.textContent = `
         editor.parentNode.insertBefore(historyContainer, editor);
         
         
-        
+        let freespace = formatBytes(getFreeSpace());
+			  let usedspace = formatBytes(getUsedSpace());
 
         const makeImage = document.getElementById('makeImage');
         makeImage.addEventListener('click', saveHistoryItem);
@@ -325,6 +338,12 @@ style.textContent = `
       closebutton.addEventListener('click', toggleHistoryAction);
       closebutton.innerHTML = `<i class="fa-solid fa-xmark"></i> Close`;
       historyContainer.appendChild(closebutton);
+      const spacelabel = document.createElement('div');
+		  spacelabel.id = `${ID_PREFIX}-history-spacelabel`;
+		  spacelabel.classList.add(`${ID_PREFIX}-history-spacelabel`);
+		  spacelabel.style.float = 'right';
+		  spacelabel.innerHTML = `<label id="usedspace">used storage: ${usedspace.toString()} / ${freespace.toString()}</label>`;
+		  historyContainer.appendChild(spacelabel);
       const historyItemsContainer = document.createElement('div');
         historyItemsContainer.id = `${ID_PREFIX}-historyItemsContainer`;
         historyContainer.appendChild(historyItemsContainer);

@@ -349,7 +349,7 @@ style.textContent = `
         historyItemsContainer.id = `${ID_PREFIX}-historyItemsContainer`;
         historyContainer.appendChild(historyItemsContainer);
         
-    
+
     let fsGen = undefined;
     let usGen = undefined;
     function continueStorageUpdate() {
@@ -374,13 +374,25 @@ style.textContent = `
         const textMsg = `Used: ${formatBytes(usGen.value)} / ${formatBytes(usGen.value + fsGen.value)}`;
         spacelabel.innerHTML = `<progress id="${ID_PREFIX}-usedspace" class="editor-slider" value="${Math.round((usGen.value / (usGen.value + fsGen.value)) * 100)}" max="100" title="${textMsg}">Storage ${textMsg}</progress>`;
         if (!fsGen.done || !usGen.done) {
-            requestIdleCallback(continueStorageUpdate, {timeout: 10});
+            if (typeof requestIdleCallback === 'function') {
+                requestIdleCallback(continueStorageUpdate, {timeout: 10});
+            } else {
+                setTimeout(continueStorageUpdate, 50);
+            }
         }
     }
     function updateStorageDisplay() {
         fsGen = undefined;
         usGen = undefined;
-        requestIdleCallback(continueStorageUpdate, {timeout: 10});
+        if (typeof requestIdleCallback === 'function') {
+            requestIdleCallback(continueStorageUpdate, {timeout: 10});
+        } else {
+            setTimeout(continueStorageUpdate, 50);
+        }
     }
-    requestIdleCallback(loadHistory, {timeout: 10});
+    if (typeof requestIdleCallback === 'function') {
+        requestIdleCallback(loadHistory, {timeout: 10});
+    } else {
+        setTimeout(loadHistory, 50);
+    }
 })();

@@ -50,7 +50,7 @@ style.textContent = `
     background: rgb(177, 27, 0);
     cursor: pointer;
   }
-  .${ID_PREFIX}-history-closebutton {
+  #${ID_PREFIX}-history-closebutton {
     background: rgb(132, 8, 0);
     border: 1px solid rgb(122, 29, 0);
     color: rgb(255, 221, 255);
@@ -61,7 +61,7 @@ style.textContent = `
     width: 70px;
     display: inline-block;
   }
-  .${ID_PREFIX}-history-closebutton:hover {
+  #${ID_PREFIX}-history-closebutton:hover {
     background: rgb(177, 27, 0);
     cursor: pointer;
   }
@@ -338,7 +338,6 @@ style.textContent = `
         
         const closebutton = document.createElement('div');
       closebutton.id = `${ID_PREFIX}-history-closebutton`;
-      closebutton.classList.add(`${ID_PREFIX}-history-closebutton`);
       closebutton.addEventListener('click', toggleHistoryAction);
       closebutton.innerHTML = `<i class="fa-solid fa-xmark"></i> Close`;
       historyContainer.appendChild(closebutton);

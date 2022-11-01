@@ -268,7 +268,10 @@ style.textContent = `
                     historyItemsContainer.appendChild(currentItem);
                     
       }
-    
+        // Reset generators and schedule an update.
+        fsGen = undefined;
+        usGen = undefined;
+        requestIdleCallback(updateStorageDisplay, {timeout: 10});
     };
      
     const saveHistoryItem = () => {
@@ -350,8 +353,8 @@ style.textContent = `
         
         loadHistory();
 
-    let fsGen = undefined;
-    let usGen = undefined;
+    var fsGen = undefined;
+    var usGen = undefined;
     function updateStorageDisplay() {
         if (!fsGen) {
             const gen = getFreeSpace();
@@ -377,5 +380,4 @@ style.textContent = `
             requestIdleCallback(updateStorageDisplay, {timeout: 10});
         }
     }
-    requestIdleCallback(updateStorageDisplay, {timeout: 10});
 })();

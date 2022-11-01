@@ -268,10 +268,7 @@ style.textContent = `
                     historyItemsContainer.appendChild(currentItem);
                     
       }
-        // Reset generators and schedule an update.
-        fsGen = undefined;
-        usGen = undefined;
-        requestIdleCallback(updateStorageDisplay, {timeout: 10});
+        updateStorageDisplay();
     };
      
     const saveHistoryItem = () => {
@@ -352,11 +349,10 @@ style.textContent = `
         historyItemsContainer.id = `${ID_PREFIX}-historyItemsContainer`;
         historyContainer.appendChild(historyItemsContainer);
         
-        loadHistory();
-
-    var fsGen = undefined;
-    var usGen = undefined;
-    function updateStorageDisplay() {
+    
+    let fsGen = undefined;
+    let usGen = undefined;
+    function continueStorageUpdate() {
         if (!fsGen) {
             const gen = getFreeSpace();
             fsGen = { next: gen.next.bind(gen) };
@@ -378,7 +374,13 @@ style.textContent = `
         const textMsg = `Used: ${formatBytes(usGen.value)} / ${formatBytes(usGen.value + fsGen.value)}`;
         spacelabel.innerHTML = `<progress id="${ID_PREFIX}-usedspace" class="editor-slider" value="${Math.round((usGen.value / (usGen.value + fsGen.value)) * 100)}" max="100" title="${textMsg}">Storage ${textMsg}</progress>`;
         if (!fsGen.done || !usGen.done) {
-            requestIdleCallback(updateStorageDisplay, {timeout: 10});
+            requestIdleCallback(continueStorageUpdate, {timeout: 10});
         }
     }
+    function updateStorageDisplay() {
+        fsGen = undefined;
+        usGen = undefined;
+        requestIdleCallback(continueStorageUpdate, {timeout: 10});
+    }
+    requestIdleCallback(loadHistory, {timeout: 10});
 })();

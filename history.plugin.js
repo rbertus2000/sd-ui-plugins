@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.3";
+const VERSION = "1.0.4";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -50,7 +50,7 @@ style.textContent = `
     background: rgb(177, 27, 0);
     cursor: pointer;
   }
-  .${ID_PREFIX}-history-closebutton {
+  #${ID_PREFIX}-history-closebutton {
     background: rgb(132, 8, 0);
     border: 1px solid rgb(122, 29, 0);
     color: rgb(255, 221, 255);
@@ -59,10 +59,19 @@ style.textContent = `
     font-size: 10pt;
     text-align: center; 
     width: 70px;
+    display: inline-block;
   }
-  .${ID_PREFIX}-history-closebutton:hover {
+  #${ID_PREFIX}-history-closebutton:hover {
     background: rgb(177, 27, 0);
     cursor: pointer;
+  }
+  #${ID_PREFIX}-usedspace {
+    width: 180px;
+    height: 1.5rem;
+    display: inline-block;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
   }
   .${ID_PREFIX}-history-item:hover {
     background: var(--accent-color-hover);
@@ -103,21 +112,21 @@ style.textContent = `
     editorInputs.appendChild(buttonsContainer);
      
     
-    function getUsedSpace() {
+    function* getUsedSpace() {
         let charCount = 0;
-        Object.keys(window.localStorage).forEach(function(key){
+        for (const key of Object.keys(window.localStorage)) {
             if (window.localStorage.hasOwnProperty(key)) {
-                charCount = key.length + window.localStorage.getItem(key).length + charCount;
+                yield charCount = key.length + window.localStorage.getItem(key).length + charCount;
             }
-        });
+        }
         return charCount;
     }
-    function getFreeSpace() {
+    function* getFreeSpace() {
         // The closer we are to the real size, the faster it returns.
         let maxCharSize = 10485760; // ~10MBytes
-        let minCharSize = 2097152; // ~2Mbytes
+        let minCharSize = 0;
+        const stopSize = 1024 * 1; // ~ 1KBytes
         const testKey = 'testQuota';
-        const timeout = 5 * 1000;
         const startTime = Date.now();
         let runTime = startTime;
         let lastRunFailed = false;
@@ -125,7 +134,7 @@ style.textContent = `
             runTime = Date.now() - startTime;
             let trySize = 1;
             try {
-                trySize = Math.ceil((maxCharSize - minCharSize) / 2);
+                trySize = Math.ceil((maxCharSize - minCharSize) / 2) + minCharSize;
                 window.localStorage.setItem(testKey, '1'.repeat(trySize));
                 minCharSize = trySize;
                 lastRunFailed = false;
@@ -133,15 +142,10 @@ style.textContent = `
                 maxCharSize = trySize - 1;
                 lastRunFailed = true;
             }
-        } while ((maxCharSize - minCharSize > (1024 * 100)) && runTime < timeout);
+            yield minCharSize + testKey.length - (lastRunFailed ? 1 : 0);
+        } while (maxCharSize - minCharSize > stopSize);
         window.localStorage.removeItem(testKey);
-        if (runTime >= timeout) {
-            console.warn("Free space calculations may be off due to timeout.");
-        }
         return minCharSize + testKey.length - (lastRunFailed ? 1 : 0);
-    }
-    function getTotalStorageSpace() {
-        return getFreeSpace() + getUsedSpace();
     }
 
     function formatBytes(bytes, decimals = 2) {
@@ -239,17 +243,17 @@ style.textContent = `
       let deletebutton = null;
       for (let item of historyItems) {
         currentItem = document.createElement('div');
-        currentItem.id = `${ID_PREFIX}-history-item-`+item.id;
+        currentItem.id = `${ID_PREFIX}-history-item-${item.id}`;
         currentItem.classList.add(`${ID_PREFIX}-history-item`);
         currentItem.innerHTML = buildHistoryItem(item.timestamp, item.setup);
         currentItem.addEventListener('click', () => {setSetup(item.setup);});
         deletebutton = document.createElement('div');
-        deletebutton.id = `${ID_PREFIX}-history-deletebutton-`+item.id;
+        deletebutton.id = `${ID_PREFIX}-history-deletebutton-${item.id}`;
         deletebutton.classList.add(`${ID_PREFIX}-history-deletebutton`);
         deletebutton.innerHTML = `<i class="fa-solid fa-trash"></i> Remove`;
         deletebutton.addEventListener('click', (e) => {
             e.preventDefault();
-            if(confirm("Are you sure you want to delete this history item?")) {
+            if(e.ctrlKey || confirm("Are you sure you want to delete this history item?")) {
               for(let i = 0; i < historyItems.length; i++){
                   if (historyItems[i].id === item.id) {
                     historyItems.splice(i, 1);
@@ -264,7 +268,7 @@ style.textContent = `
                     historyItemsContainer.appendChild(currentItem);
                     
       }
-    
+        updateStorageDisplay();
     };
      
     const saveHistoryItem = () => {
@@ -312,9 +316,6 @@ style.textContent = `
         editor.parentNode.insertBefore(historyContainer, editor);
         
         
-        let freespace = formatBytes(getFreeSpace());
-			  let usedspace = formatBytes(getUsedSpace());
-
         const makeImage = document.getElementById('makeImage');
         makeImage.addEventListener('click', saveHistoryItem);
         
@@ -322,6 +323,7 @@ style.textContent = `
         toggleHistory.id = `${ID_PREFIX}-togglehistoryButton`;
         toggleHistory.innerText = "show history";
         toggleHistory.classList.add(`${ID_PREFIX}-history-btn`);
+        toggleHistory.title = `V${VERSION}`;
         toggleHistory.addEventListener('click', toggleHistoryAction);
         buttonsContainer.appendChild(toggleHistory);
 
@@ -329,12 +331,12 @@ style.textContent = `
         save.id = `${ID_PREFIX}-savehistoryButton`;
         save.innerText = "save";
         save.classList.add(`${ID_PREFIX}-history-btn`);
+        save.title = `V${VERSION}`;
         save.addEventListener('click', saveHistoryItem);
         buttonsContainer.appendChild(save);
         
         const closebutton = document.createElement('div');
       closebutton.id = `${ID_PREFIX}-history-closebutton`;
-      closebutton.classList.add(`${ID_PREFIX}-history-closebutton`);
       closebutton.addEventListener('click', toggleHistoryAction);
       closebutton.innerHTML = `<i class="fa-solid fa-xmark"></i> Close`;
       historyContainer.appendChild(closebutton);
@@ -342,12 +344,55 @@ style.textContent = `
 		  spacelabel.id = `${ID_PREFIX}-history-spacelabel`;
 		  spacelabel.classList.add(`${ID_PREFIX}-history-spacelabel`);
 		  spacelabel.style.float = 'right';
-		  spacelabel.innerHTML = `<label id="usedspace">used storage: ${usedspace.toString()} / ${freespace.toString()}</label>`;
 		  historyContainer.appendChild(spacelabel);
       const historyItemsContainer = document.createElement('div');
         historyItemsContainer.id = `${ID_PREFIX}-historyItemsContainer`;
         historyContainer.appendChild(historyItemsContainer);
         
-        loadHistory();
-    
+
+    let fsGen = undefined;
+    let usGen = undefined;
+    function continueStorageUpdate() {
+        if (!fsGen) {
+            const gen = getFreeSpace();
+            fsGen = { next: gen.next.bind(gen) };
+        }
+        if (!usGen) {
+            const gen = getUsedSpace()
+            usGen = { next: gen.next.bind(gen) };
+        }
+        if (!fsGen.done) {
+            let freespace = fsGen.next();
+            freespace.next = fsGen.next;
+            fsGen = freespace;
+        }
+        if (!usGen.done) {
+            let usedspace = usGen.next();
+            usedspace.next = usGen.next;
+            usGen = usedspace;
+        }
+        const textMsg = `Used: ${formatBytes(usGen.value)} / ${formatBytes(usGen.value + fsGen.value)}`;
+        spacelabel.innerHTML = `<progress id="${ID_PREFIX}-usedspace" class="editor-slider" value="${Math.round((usGen.value / (usGen.value + fsGen.value)) * 100)}" max="100" title="${textMsg}">Storage ${textMsg}</progress>`;
+        if (!fsGen.done || !usGen.done) {
+            if (typeof requestIdleCallback === 'function') {
+                requestIdleCallback(continueStorageUpdate, {timeout: 10});
+            } else {
+                setTimeout(continueStorageUpdate, 50);
+            }
+        }
+    }
+    function updateStorageDisplay() {
+        fsGen = undefined;
+        usGen = undefined;
+        if (typeof requestIdleCallback === 'function') {
+            requestIdleCallback(continueStorageUpdate, {timeout: 10});
+        } else {
+            setTimeout(continueStorageUpdate, 50);
+        }
+    }
+    if (typeof requestIdleCallback === 'function') {
+        requestIdleCallback(loadHistory, {timeout: 10});
+    } else {
+        setTimeout(loadHistory, 50);
+    }
 })();

@@ -253,7 +253,7 @@ style.textContent = `
         deletebutton.innerHTML = `<i class="fa-solid fa-trash"></i> Remove`;
         deletebutton.addEventListener('click', (e) => {
             e.preventDefault();
-            if(confirm("Are you sure you want to delete this history item?")) {
+            if(e.ctrlKey || confirm("Are you sure you want to delete this history item?")) {
               for(let i = 0; i < historyItems.length; i++){
                   if (historyItems[i].id === item.id) {
                     historyItems.splice(i, 1);

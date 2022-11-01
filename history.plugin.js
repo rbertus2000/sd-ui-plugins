@@ -59,10 +59,19 @@ style.textContent = `
     font-size: 10pt;
     text-align: center; 
     width: 70px;
+    display: inline-block;
   }
   .${ID_PREFIX}-history-closebutton:hover {
     background: rgb(177, 27, 0);
     cursor: pointer;
+  }
+  .${ID_PREFIX}-usedspace {
+    width: 100%;
+    height: 1.5rem;
+    display: inline-block;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
   }
   .${ID_PREFIX}-history-item:hover {
     background: var(--accent-color-hover);
@@ -103,21 +112,21 @@ style.textContent = `
     editorInputs.appendChild(buttonsContainer);
      
     
-    function getUsedSpace() {
+    function* getUsedSpace() {
         let charCount = 0;
-        Object.keys(window.localStorage).forEach(function(key){
+        for (const key of Object.keys(window.localStorage)) {
             if (window.localStorage.hasOwnProperty(key)) {
-                charCount = key.length + window.localStorage.getItem(key).length + charCount;
+                yield charCount = key.length + window.localStorage.getItem(key).length + charCount;
             }
-        });
+        }
         return charCount;
     }
-    function getFreeSpace() {
+    function* getFreeSpace() {
         // The closer we are to the real size, the faster it returns.
         let maxCharSize = 10485760; // ~10MBytes
-        let minCharSize = 2097152; // ~2Mbytes
+        let minCharSize = 0;
+        const stopSize = 1024 * 1; // ~ 1KBytes
         const testKey = 'testQuota';
-        const timeout = 5 * 1000;
         const startTime = Date.now();
         let runTime = startTime;
         let lastRunFailed = false;
@@ -125,7 +134,7 @@ style.textContent = `
             runTime = Date.now() - startTime;
             let trySize = 1;
             try {
-                trySize = Math.ceil((maxCharSize - minCharSize) / 2);
+                trySize = Math.ceil((maxCharSize - minCharSize) / 2) + minCharSize;
                 window.localStorage.setItem(testKey, '1'.repeat(trySize));
                 minCharSize = trySize;
                 lastRunFailed = false;
@@ -133,15 +142,10 @@ style.textContent = `
                 maxCharSize = trySize - 1;
                 lastRunFailed = true;
             }
-        } while ((maxCharSize - minCharSize > (1024 * 100)) && runTime < timeout);
+            yield minCharSize + testKey.length - (lastRunFailed ? 1 : 0);
+        } while (maxCharSize - minCharSize > stopSize);
         window.localStorage.removeItem(testKey);
-        if (runTime >= timeout) {
-            console.warn("Free space calculations may be off due to timeout.");
-        }
         return minCharSize + testKey.length - (lastRunFailed ? 1 : 0);
-    }
-    function getTotalStorageSpace() {
-        return getFreeSpace() + getUsedSpace();
     }
 
     function formatBytes(bytes, decimals = 2) {
@@ -312,9 +316,6 @@ style.textContent = `
         editor.parentNode.insertBefore(historyContainer, editor);
         
         
-        let freespace = formatBytes(getFreeSpace());
-			  let usedspace = formatBytes(getUsedSpace());
-
         const makeImage = document.getElementById('makeImage');
         makeImage.addEventListener('click', saveHistoryItem);
         
@@ -342,12 +343,39 @@ style.textContent = `
 		  spacelabel.id = `${ID_PREFIX}-history-spacelabel`;
 		  spacelabel.classList.add(`${ID_PREFIX}-history-spacelabel`);
 		  spacelabel.style.float = 'right';
-		  spacelabel.innerHTML = `<label id="usedspace">used storage: ${usedspace.toString()} / ${freespace.toString()}</label>`;
 		  historyContainer.appendChild(spacelabel);
       const historyItemsContainer = document.createElement('div');
         historyItemsContainer.id = `${ID_PREFIX}-historyItemsContainer`;
         historyContainer.appendChild(historyItemsContainer);
         
         loadHistory();
-    
+
+    let fsGen = undefined;
+    let usGen = undefined;
+    function updateStorageDisplay() {
+        if (!fsGen) {
+            const gen = getFreeSpace();
+            fsGen = { next: gen.next.bind(gen) };
+        }
+        if (!usGen) {
+            const gen = getUsedSpace()
+            usGen = { next: gen.next.bind(gen) };
+        }
+        if (!fsGen.done) {
+            let freespace = fsGen.next();
+            freespace.next = fsGen.next;
+            fsGen = freespace;
+        }
+        if (!usGen.done) {
+            let usedspace = usGen.next();
+            usedspace.next = usGen.next;
+            usGen = usedspace;
+        }
+        const textMsg = `Used: ${formatBytes(usGen.value)} / ${formatBytes(usGen.value + fsGen.value)}`;
+        spacelabel.innerHTML = `<progress id="${ID_PREFIX}-usedspace" class="editor-slider" value="${Math.round((usGen.value / (usGen.value + fsGen.value)) * 100)}" max="100" title="${textMsg}">Storage ${textMsg}</progress>`;
+        if (!fsGen.done || !usGen.done) {
+            requestIdleCallback(updateStorageDisplay, {timeout: 10});
+        }
+    }
+    requestIdleCallback(updateStorageDisplay, {timeout: 10});
 })();

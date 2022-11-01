@@ -243,12 +243,12 @@ style.textContent = `
       let deletebutton = null;
       for (let item of historyItems) {
         currentItem = document.createElement('div');
-        currentItem.id = `${ID_PREFIX}-history-item-`+item.id;
+        currentItem.id = `${ID_PREFIX}-history-item-${item.id}`;
         currentItem.classList.add(`${ID_PREFIX}-history-item`);
         currentItem.innerHTML = buildHistoryItem(item.timestamp, item.setup);
         currentItem.addEventListener('click', () => {setSetup(item.setup);});
         deletebutton = document.createElement('div');
-        deletebutton.id = `${ID_PREFIX}-history-deletebutton-`+item.id;
+        deletebutton.id = `${ID_PREFIX}-history-deletebutton-${item.id}`;
         deletebutton.classList.add(`${ID_PREFIX}-history-deletebutton`);
         deletebutton.innerHTML = `<i class="fa-solid fa-trash"></i> Remove`;
         deletebutton.addEventListener('click', (e) => {

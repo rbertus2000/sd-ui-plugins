@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.4";
+const VERSION = "1.0.5";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -165,6 +165,7 @@ style.textContent = `
         seedField.disabled = stateObject.random;
         randomSeedField.checked = stateObject.random;
         stableDiffusionModelField.value = stateObject.model;
+        vaeModelField.value = stateObject.vae;
         samplerField.value = stateObject.sampler;
         widthField.value = stateObject.width;
         heightField.value = stateObject.height;
@@ -199,6 +200,7 @@ style.textContent = `
             seed: seedField.value,
             random: randomSeedField.checked,
             model: stableDiffusionModelField.value,
+            vae: vaeModelField.value,
             sampler: samplerField.value,
             width: widthField.value,
             height: heightField.value,
@@ -223,7 +225,7 @@ style.textContent = `
       <div class="${ID_PREFIX}-history-prompt">${item.prompt}</div>
       <div class="${ID_PREFIX}-history-infos">
         <span>negative: '${item.negative}'</span><br/>
-        <span>sampler: '${item.sampler}'</span> <span>w: '${item.width}'</span> <span>h: '${item.height}'</span> <span>steps: '${item.steps}'</span> <span>scale: '${item.guidance}'</span> <span>model: '${item.model}'</span><br/>
+        <span>sampler: '${item.sampler}'</span> <span>w: '${item.width}'</span> <span>h: '${item.height}'</span> <span>steps: '${item.steps}'</span> <span>scale: '${item.guidance}'</span> <span>model: '${item.model}'</span><span>VAE: '${item.vae}'</span><br/>
         <span>facefix: '${item.facefix}'</span> <span>upscale: '${item.useUpscaling}'</span> <span>seed: ${item.random ? 'random' : item.seed}</span>
       </div>
       

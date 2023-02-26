@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.5";
+const VERSION = "1.0.6";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -339,10 +339,25 @@ style.textContent = `
       closebutton.addEventListener('click', toggleHistoryAction);
       closebutton.innerHTML = `<i class="fa-solid fa-xmark"></i> Close`;
       historyContainer.appendChild(closebutton);
+
+      const deleteallbutton = document.createElement('div');
+		  deleteallbutton.id = `${ID_PREFIX}-history-deleteallbutton`;
+		  deleteallbutton.classList.add(`${ID_PREFIX}-history-deletebutton`);
+		  deleteallbutton.addEventListener('click', (e) => {
+			e.preventDefault();
+			if(e.ctrlKey || confirm(`Are you sure you want to delete all items?`)) {
+			  
+			  localStorage.removeItem(`${ID_PREFIX}-history`);
+			  
+			}
+		  });
+		  deleteallbutton.innerHTML = `<i class="fa-solid fa-trash"></i> Remove all Entries!`;
+		  historyContainer.appendChild(deleteallbutton);
+
       const spacelabel = document.createElement('div');
 		  spacelabel.id = `${ID_PREFIX}-history-spacelabel`;
 		  spacelabel.classList.add(`${ID_PREFIX}-history-spacelabel`);
-		  spacelabel.style.float = 'right';
+		  spacelabel.style.display = 'inline-block';
 		  historyContainer.appendChild(spacelabel);
       const historyItemsContainer = document.createElement('div');
         historyItemsContainer.id = `${ID_PREFIX}-historyItemsContainer`;

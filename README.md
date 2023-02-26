@@ -2,4 +2,4 @@
 my sd-ui-plugins
 
 # Versions
-    History: 1.0.5
+    History: 1.0.6

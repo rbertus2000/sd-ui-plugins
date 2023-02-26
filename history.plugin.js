@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.6";
+const VERSION = "1.0.7";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -179,6 +179,8 @@ style.textContent = `
         upscaleModelField.value = stateObject.upscale;
         upscaleModelField.disabled = !stateObject.useUpscaling;
         guidanceScaleSlider.value = stateObject.guidance * 10;
+        hypernetworkModelField.value = stateObject.hypernetwork===undefined ? '' : stateObject.hypernetwork;
+			hypernetworkStrengthField.value = stateObject.hypernetworkStrength===undefined ? 0 : stateObject.hypernetworkStrength;
         document.getElementById('prompt').dispatchEvent(new Event('input', {bubbles:true}));
     }
      
@@ -212,6 +214,8 @@ style.textContent = `
             facefix: useFaceCorrectionField.checked,
             useUpscaling: useUpscalingField.checked,
             upscale: upscaleModelField.value,
+            hypernetwork: hypernetworkModelField.value,
+				    hypernetworkStrength: hypernetworkStrengthField.value,
         };
         return stateObject;
         //stateCodeField.value = btoa(JSON.stringify(stateObject));
@@ -226,7 +230,7 @@ style.textContent = `
       <div class="${ID_PREFIX}-history-infos">
         <span>negative: '${item.negative}'</span><br/>
         <span>sampler: '${item.sampler}'</span> <span>w: '${item.width}'</span> <span>h: '${item.height}'</span> <span>steps: '${item.steps}'</span> <span>scale: '${item.guidance}'</span> <span>model: '${item.model}'</span><span>VAE: '${item.vae}'</span><br/>
-        <span>facefix: '${item.facefix}'</span> <span>upscale: '${item.useUpscaling}'</span> <span>seed: ${item.random ? 'random' : item.seed}</span>
+        <span>facefix: '${item.facefix}'</span> <span>upscale: '${item.useUpscaling}'</span> <span><b>Hypernetwork:</b> '${(item.hypernetwork===undefined|| item.hypernetwork==='') ? 'None' : item.hypernetwork}'</span> <span><b>Hypernetwork Strength:</b> '${item.hypernetworkStrength===undefined ? 0 : item.hypernetworkStrength}'</span> <span><b>seed:</b> ${item.random ? 'random' : item.seed}</span>
       </div>
       
       `;

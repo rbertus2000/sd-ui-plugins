@@ -352,7 +352,8 @@ style.textContent = `
 			if(e.ctrlKey || confirm(`Are you sure you want to delete all items?`)) {
 			  
 			  localStorage.removeItem(`${ID_PREFIX}-history`);
-			  
+        localStorage.setItem(`${ID_PREFIX}-history`, "[]");
+			  loadHistory();
 			}
 		  });
 		  deleteallbutton.innerHTML = `<i class="fa-solid fa-trash"></i> Remove all Entries!`;

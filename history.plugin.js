@@ -259,9 +259,9 @@ style.textContent = `
       <div class="${ID_PREFIX}-history-datetime">${new Date(timestamp).toLocaleString()}</div>
       <div class="${ID_PREFIX}-history-prompt">${item.prompt}</div>
       <div class="${ID_PREFIX}-history-infos">
-        <span>negative: '${item.negative}'</span><br/>
-        <span>sampler: '${item.sampler}'</span> <span>w: '${item.width}'</span> <span>h: '${item.height}'</span> <span>steps: '${item.steps}'</span> <span>scale: '${item.guidance}'</span> <span>model: '${item.model}'</span><span>VAE: '${item.vae}'</span><br/>
-        <span>facefix: '${item.facefix}'</span> <span>upscale: '${item.useUpscaling}'</span> <span><b>Hypernetwork:</b> '${(item.hypernetwork===undefined|| item.hypernetwork==='') ? 'None' : item.hypernetwork}'</span> <span><b>Hypernetwork Strength:</b> '${item.hypernetworkStrength===undefined ? 0 : item.hypernetworkStrength}'</span> <span><b>seed:</b> ${item.random ? 'random' : item.seed}</span>
+      <span><b>negative:</b> '${item.negative}'</span><br/>
+			<span><b>sampler:</b> '${item.sampler}'</span> <span><b>w:</b> '${item.width}'</span> <span><b>h:</b> '${item.height}'</span> <span><b>steps:</b> '${item.steps}'</span> <span><b>scale:</b> '${item.guidance}'</span> <span><b>model:</b> '${item.model}'</span> <span><b>VAE:</b> '${item.vae}'</span><br/>
+			<span><b>facefix:</b> '${item.facefix}'</span> <span><b>upscale:</b> '${item.useUpscaling}'</span> <span><b>Hypernetwork:</b> '${(item.hypernetwork===undefined|| item.hypernetwork==='') ? 'None' : item.hypernetwork}'</span> <span><b>Hypernetwork Strength:</b> '${item.hypernetworkStrength===undefined ? 0 : item.hypernetworkStrength}'</span> <span><b>seed:</b> ${item.random ? 'random' : item.seed}</span>
       </div>
       
       `;

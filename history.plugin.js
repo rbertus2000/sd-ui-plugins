@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.7";
+const VERSION = "1.0.8";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -105,6 +105,37 @@ style.textContent = `
         }
     })();
  
+    /* inject new settings in the existing system settings popup table */
+		let settings = [
+			{
+				id: "history-plugin-autosave",
+				type: ParameterType.checkbox,
+				label: "Add entry to history plugin automatically",
+				note: "Add entry to history plugin with click on Make Images",
+				icon: "fa-solid fa-list",
+				default: true
+			}
+		];
+	
+		function injectParameters(parameters) {
+			parameters.forEach(parameter => {
+				var element = getParameterElement(parameter)
+				var note = parameter.note ? `<small>${parameter.note}</small>` : "";
+				var icon = parameter.icon ? `<i class="fa ${parameter.icon}"></i>` : "";
+				var newRow = document.createElement('div')
+				newRow.innerHTML = `
+					<div>${icon}</div>
+					<div><label for="${parameter.id}">${parameter.label}</label>${note}</div>
+					<div>${element}</div>`
+				parametersTable.appendChild(newRow)
+				//parametersTable.insertBefore(newRow, parametersTable.children[13])
+				parameter.settingsEntry = newRow
+			})
+		}
+		injectParameters(settings)
+		prettifyInputs(document);
+		let autosaveentries = document.querySelector("#history-plugin-autosave");
+
     const editorInputs = document.getElementById("editor-inputs");
     
     const buttonsContainer = document.createElement('div');
@@ -318,9 +349,15 @@ style.textContent = `
         const editor = document.getElementById('editor');
         editor.parentNode.insertBefore(historyContainer, editor);
         
-        
+    function updateAutosaveListener() { 
         const makeImage = document.getElementById('makeImage');
-        makeImage.addEventListener('click', saveHistoryItem);
+        if (autosaveentries.checked==true) {
+            makeImage.addEventListener('click', saveHistoryItem);
+        }
+        else {
+          makeImage.removeEventListener('click', saveHistoryItem); 
+        }
+    }
         
         const toggleHistory = document.createElement('button');
         toggleHistory.id = `${ID_PREFIX}-togglehistoryButton`;
@@ -414,4 +451,12 @@ style.textContent = `
     } else {
         setTimeout(loadHistory, 50);
     }
+
+    // save/restore the desired method
+    autosaveentries.addEventListener('change', (e) => {
+      localStorage.setItem(settings[0].id, autosaveentries.checked)
+      updateAutosaveListener()
+  })
+  autosaveentries.checked = localStorage.getItem(settings[0].id) == null ? settings[0].default : localStorage.getItem(settings[0].id) === 'true'
+  updateAutosaveListener()	
 })();

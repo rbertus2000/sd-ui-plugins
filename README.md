@@ -1,5 +1,5 @@
-# Rob's sd-ui-plugins
-my sd-ui-plugins
+# Rob's EasyDiffusion plugins
+Plugins for EasyDiffusion 
 
 # Versions
-    History: 1.0.8
+    History: 1.0.9

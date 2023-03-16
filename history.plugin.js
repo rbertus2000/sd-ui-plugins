@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.8";
+const VERSION = "1.0.9";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -20,7 +20,24 @@ style.textContent = `
     display:none;
     overflow:hidden;
     overflow-y: hidden;
-  }
+
+    z-index: 2;
+    position: fixed;
+    max-width: 40%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+	}
+      
+	  #${ID_PREFIX}-historyItemsContainer::-webkit-scrollbar-thumb {
+		background: var(--background-color3);
+		border-radius: 8px;
+	}
+	
+	#${ID_PREFIX}-historyItemsContainer::-webkit-scrollbar {
+		width: 8px;
+	}	  
+  
   #${ID_PREFIX}-historyItemsContainer {
     overflow:hidden;
     overflow-y: scroll;
@@ -260,7 +277,7 @@ style.textContent = `
       <div class="${ID_PREFIX}-history-prompt">${item.prompt}</div>
       <div class="${ID_PREFIX}-history-infos">
       <span><b>negative:</b> '${item.negative}'</span><br/>
-			<span><b>sampler:</b> '${item.sampler}'</span> <span><b>w:</b> '${item.width}'</span> <span><b>h:</b> '${item.height}'</span> <span><b>steps:</b> '${item.steps}'</span> <span><b>scale:</b> '${item.guidance}'</span> <span><b>model:</b> '${item.model}'</span> <span><b>VAE:</b> '${item.vae}'</span><br/>
+			<span><b>sampler:</b> '${item.sampler}'</span> <span><b>w:</b> '${item.width}'</span> <span><b>h:</b> '${item.height}'</span> <span><b>steps:</b> '${item.steps}'</span> <span><b>scale:</b> '${item.guidance}'</span> <span><b>model:</b> '${item.model}'</span> <span><b>VAE:</b> '${(item.vae===undefined|| item.vae==='') ? 'None' : item.vae}'</span><br/>
 			<span><b>facefix:</b> '${item.facefix}'</span> <span><b>upscale:</b> '${item.useUpscaling}'</span> <span><b>Hypernetwork:</b> '${(item.hypernetwork===undefined|| item.hypernetwork==='') ? 'None' : item.hypernetwork}'</span> <span><b>Hypernetwork Strength:</b> '${item.hypernetworkStrength===undefined ? 0 : item.hypernetworkStrength}'</span> <span><b>seed:</b> ${item.random ? 'random' : item.seed}</span>
       </div>
       

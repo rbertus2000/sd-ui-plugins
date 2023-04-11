@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.9";
+const VERSION = "1.0.10";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -234,9 +234,7 @@ style.textContent = `
      
     function getSetup() {
       let prompts = promptField.value;
-			if (prompts.trim() === '') {
-				return [''];
-			}
+			
 		
 			prompts = prompts.split('\n');
 			prompts = prompts.map(prompt => prompt.trim());
@@ -244,7 +242,11 @@ style.textContent = `
 			const newTags = activeTags.filter(tag => tag.inactive === undefined || tag.inactive === false);
 			if (newTags.length > 0) {
 				const promptTags = newTags.map(x => x.name).join(", ");
-				prompts = prompts.map((prompt) => `${prompt}, ${promptTags}`);
+				if (prompts.length > 0) {
+          prompts = prompts.map((prompt) => `${prompt}, ${promptTags}`);
+          } else { 
+            prompts.push(promptTags); 
+          }
 				}
         let stateObject = {
             prompt: prompts,

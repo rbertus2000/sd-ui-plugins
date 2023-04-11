@@ -2,4 +2,4 @@
 Plugins for EasyDiffusion 
 
 # Versions
-    History: 1.0.9
+    History: 1.0.10

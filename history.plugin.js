@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.10";
+const VERSION = "1.0.11";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -307,7 +307,7 @@ style.textContent = `
         deletebutton.innerHTML = `<i class="fa-solid fa-trash"></i> Remove`;
         deletebutton.addEventListener('click', (e) => {
             e.preventDefault();
-            if(e.ctrlKey || confirm("Are you sure you want to delete this history item?")) {
+            confirm("Are you sure you want to delete this history item?", "Are you sure?", () => {
               for(let i = 0; i < historyItems.length; i++){
                   if (historyItems[i].id === item.id) {
                     historyItems.splice(i, 1);
@@ -316,7 +316,7 @@ style.textContent = `
               }
               localStorage.setItem(`${ID_PREFIX}-history`, JSON.stringify(historyItems));
               loadHistory();
-            }
+            }); 
           });
                     historyItemsContainer.appendChild(deletebutton);
                     historyItemsContainer.appendChild(currentItem);
@@ -406,13 +406,14 @@ style.textContent = `
 		  deleteallbutton.classList.add(`${ID_PREFIX}-history-deletebutton`);
 		  deleteallbutton.addEventListener('click', (e) => {
 			e.preventDefault();
-			if(e.ctrlKey || confirm(`Are you sure you want to delete all items?`)) {
+			confirm(`Are you sure you want to delete <b><u>all</u></b> items?`,`Are you sure you want to delete <b><u>all</u></b> items?`, () => {   
 			  
 			  localStorage.removeItem(`${ID_PREFIX}-history`);
         localStorage.setItem(`${ID_PREFIX}-history`, "[]");
 			  loadHistory();
 			}
-		  });
+		        );
+                  });
 		  deleteallbutton.innerHTML = `<i class="fa-solid fa-trash"></i> Remove all Entries!`;
 		  historyContainer.appendChild(deleteallbutton);
 

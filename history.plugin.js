@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.12";
+const VERSION = "1.0.13";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -479,17 +479,34 @@ style.textContent = `
       updateAutosaveListener()
   })
   autosaveentries.checked = localStorage.getItem(settings[0].id) == null ? settings[0].default : localStorage.getItem(settings[0].id) === 'true'
-  updateAutosaveListener()
+  updateAutosaveListener()	
 
   // ... (existing code)
 
+  function getCurrentTimestamp() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    const shortHours = (hours % 12) || 12;
+    const day = now.getDate();
+    const month = now.getMonth() + 1; // Months are zero-indexed
+    const year = now.getFullYear().toString().substr(-2);
+    
+    const timestamp = `${shortHours.toString().padStart(2, '0')}.${minutes.toString().padStart(2, '0')}${ampm}${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+    return timestamp;
+  }
+
   function downloadHistory(historyData) {
+    const timestamp = getCurrentTimestamp();
+    const fileName = `history_${timestamp}.txt`;
+
     const blob = new Blob([JSON.stringify(historyData)], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'history.txt';
+    a.download = fileName;
     a.click();
 
     // Clean up the URL object
@@ -524,7 +541,7 @@ style.textContent = `
   function setupSaveButton() {
     const saveButton = document.createElement('button');
     saveButton.id = `${ID_PREFIX}-saveButton`;
-    saveButton.innerText = 'Save History';
+    saveButton.innerText = 'Export History';
     saveButton.classList.add(`${ID_PREFIX}-history-btn`);
     saveButton.title = `V${VERSION}`;
     saveButton.addEventListener('click', () => {
@@ -541,7 +558,7 @@ style.textContent = `
   function setupLoadButton() {
     const loadButton = document.createElement('button');
     loadButton.id = `${ID_PREFIX}-loadButton`;
-    loadButton.innerText = 'Load History';
+    loadButton.innerText = 'Import History';
     loadButton.classList.add(`${ID_PREFIX}-history-btn`);
     loadButton.title = `V${VERSION}`;
     loadButton.addEventListener('click', () => {
@@ -558,4 +575,5 @@ style.textContent = `
   setupSaveButton();
   setupLoadButton();
 
+  // ... (remaining code)
 })();

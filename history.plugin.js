@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.11";
+const VERSION = "1.0.12";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -479,5 +479,83 @@ style.textContent = `
       updateAutosaveListener()
   })
   autosaveentries.checked = localStorage.getItem(settings[0].id) == null ? settings[0].default : localStorage.getItem(settings[0].id) === 'true'
-  updateAutosaveListener()	
+  updateAutosaveListener()
+
+  // ... (existing code)
+
+  function downloadHistory(historyData) {
+    const blob = new Blob([JSON.stringify(historyData)], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'history.txt';
+    a.click();
+
+    // Clean up the URL object
+    URL.revokeObjectURL(url);
+  }
+
+  function loadHistoryFromFile(file) {
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+      try {
+        const historyData = JSON.parse(event.target.result);
+        localStorage.setItem(`${ID_PREFIX}-history`, JSON.stringify(historyData));
+        loadHistory();
+        alert('History loaded successfully!');
+      } catch (error) {
+        console.error('Error parsing history file:', error);
+        alert('Failed to load history. Please ensure the file contains valid JSON data.');
+      }
+    };
+
+    reader.readAsText(file);
+  }
+
+  function loadHistoryFromInput(input) {
+    const file = input.files[0];
+    if (file) {
+      loadHistoryFromFile(file);
+    }
+  }
+
+  function setupSaveButton() {
+    const saveButton = document.createElement('button');
+    saveButton.id = `${ID_PREFIX}-saveButton`;
+    saveButton.innerText = 'Save History';
+    saveButton.classList.add(`${ID_PREFIX}-history-btn`);
+    saveButton.title = `V${VERSION}`;
+    saveButton.addEventListener('click', () => {
+      const currentHistory = JSON.parse(localStorage.getItem(`${ID_PREFIX}-history`));
+      if (currentHistory && currentHistory.length > 0) {
+        downloadHistory(currentHistory);
+      } else {
+        alert('No history to save!');
+      }
+    });
+    buttonsContainer.appendChild(saveButton);
+  }
+
+  function setupLoadButton() {
+    const loadButton = document.createElement('button');
+    loadButton.id = `${ID_PREFIX}-loadButton`;
+    loadButton.innerText = 'Load History';
+    loadButton.classList.add(`${ID_PREFIX}-history-btn`);
+    loadButton.title = `V${VERSION}`;
+    loadButton.addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.txt,.json';
+      input.addEventListener('change', () => loadHistoryFromInput(input));
+      input.click();
+    });
+    buttonsContainer.appendChild(loadButton);
+  }
+
+  // Call the functions to set up the "Save History" and "Load History" buttons
+  setupSaveButton();
+  setupLoadButton();
+
 })();

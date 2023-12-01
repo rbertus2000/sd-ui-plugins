@@ -152,7 +152,7 @@ style.textContent = `
 		injectParameters(settings)
 		prettifyInputs(document);
 		let autosaveentries = document.querySelector("#history-plugin-autosave");
-
+		let confirmActions = document.querySelector("#confirm_dangerous_actions");
     const editorInputs = document.getElementById("editor-inputs");
     
     const buttonsContainer = document.createElement('div');
@@ -307,16 +307,27 @@ style.textContent = `
         deletebutton.innerHTML = `<i class="fa-solid fa-trash"></i> Remove`;
         deletebutton.addEventListener('click', (e) => {
             e.preventDefault();
-            confirm("Are you sure you want to delete this history item?", "Are you sure?", () => {
-              for(let i = 0; i < historyItems.length; i++){
-                  if (historyItems[i].id === item.id) {
-                    historyItems.splice(i, 1);
-                    break;
-                  }
-              }
-              localStorage.setItem(`${ID_PREFIX}-history`, JSON.stringify(historyItems));
-              loadHistory();
-            }); 
+		 if(confirmActions.checked!==true){
+			  for(let i = 0; i < historyItems.length; i++){
+	                  if (historyItems[i].id === item.id) {
+	                    historyItems.splice(i, 1);
+	                    break;
+	                  }
+	              }
+	              localStorage.setItem(`${ID_PREFIX}-history`, JSON.stringify(historyItems));
+	              loadHistory();
+		 } else {
+	            confirm("Are you sure you want to delete this history item?", "Are you sure?", () => {
+	              for(let i = 0; i < historyItems.length; i++){
+	                  if (historyItems[i].id === item.id) {
+	                    historyItems.splice(i, 1);
+	                    break;
+	                  }
+	              }
+	              localStorage.setItem(`${ID_PREFIX}-history`, JSON.stringify(historyItems));
+	              loadHistory();
+	            }); 
+	 	}	
           });
                     historyItemsContainer.appendChild(deletebutton);
                     historyItemsContainer.appendChild(currentItem);
@@ -406,6 +417,11 @@ style.textContent = `
 		  deleteallbutton.classList.add(`${ID_PREFIX}-history-deletebutton`);
 		  deleteallbutton.addEventListener('click', (e) => {
 			e.preventDefault();
+			  if(confirmActions.checked!==true){
+			  	localStorage.removeItem(`${ID_PREFIX}-history`);
+        			localStorage.setItem(`${ID_PREFIX}-history`, "[]");
+			  	loadHistory();
+			  } else {
 			confirm(`Are you sure you want to delete <b><u>all</u></b> items?`,`Are you sure you want to delete <b><u>all</u></b> items?`, () => {   
 			  
 			  localStorage.removeItem(`${ID_PREFIX}-history`);
@@ -414,6 +430,7 @@ style.textContent = `
 			}
 		        );
                   });
+	    }
 		  deleteallbutton.innerHTML = `<i class="fa-solid fa-trash"></i> Remove all Entries!`;
 		  historyContainer.appendChild(deleteallbutton);
 

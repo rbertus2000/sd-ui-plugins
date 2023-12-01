@@ -429,8 +429,9 @@ style.textContent = `
 			  loadHistory();
 			}
 		        );
+			  }
                   });
-	    }
+	    
 		  deleteallbutton.innerHTML = `<i class="fa-solid fa-trash"></i> Remove all Entries!`;
 		  historyContainer.appendChild(deleteallbutton);
 

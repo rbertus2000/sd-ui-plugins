@@ -123,17 +123,24 @@ style.textContent = `
     })();
  
     /* inject new settings in the existing system settings popup table */
-		let settings = [
-			{
-				id: "history-plugin-autosave",
-				type: ParameterType.checkbox,
-				label: "Add entry to history plugin automatically",
-				note: "Add entry to history plugin with click on Make Images",
-				icon: "fa-solid fa-list",
-				default: true
-			}
-		];
-	
+	  let settings = [
+      {
+        id: "history-plugin-autosave",
+        type: ParameterType.checkbox,
+        label: "Add entry to history plugin automatically",
+        note: "Add entry to history plugin with click on Make Images",
+        icon: "fa-solid fa-list",
+        default: true
+      },
+      {
+        id: "history-plugin-overwrite_duplicate_prompts",
+        type: ParameterType.checkbox,
+        label: "If prompt exists in history, overwrite it with new settings",
+        note: "If a prompt is already in the history, overwrite its settings with the newer one if the input text is the same. Usefull if you want to add prompts to history but dont want duplicates. Do not compare with negative prompts.",
+        icon: "fa-solid fa-list",
+        default: false
+      }
+    ];
 		function injectParameters(parameters) {
 			parameters.forEach(parameter => {
 				var element = getParameterElement(parameter)
@@ -152,7 +159,12 @@ style.textContent = `
 		injectParameters(settings)
 		prettifyInputs(document);
 		let autosaveentries = document.querySelector("#history-plugin-autosave");
+
+    let overwriteDuplicatePrompts = document.querySelector("#history-plugin-overwrite_duplicate_prompts");
+
+
 		let confirmActions = document.querySelector("#confirm_dangerous_actions");
+
     const editorInputs = document.getElementById("editor-inputs");
     
     const buttonsContainer = document.createElement('div');
@@ -348,6 +360,20 @@ style.textContent = `
         };
         let a = {...lastItem.setup};
         let b = {...newItem.setup};
+        if (overwriteDuplicatePrompts.checked == true) {
+          // loop through all items and check if the prompt is already in the history
+        
+          for (let i = 0; i < currentHistory.length; i++) {
+            console.log(newItem.setup.prompt);
+            if (JSON.stringify(currentHistory[i].setup.prompt) === JSON.stringify(newItem.setup.prompt)) {
+              // if the prompt is already in the history, remove it
+        
+              currentHistory.splice(i, 1);
+              console.log("overwrite");
+              break;
+            }
+          }
+        }
         if (JSON.stringify(a) !== JSON.stringify(b)) localStorage.setItem(`${ID_PREFIX}-history`, JSON.stringify([newItem, ...currentHistory]));
       } else {
         let newItem = {

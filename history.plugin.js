@@ -1,7 +1,7 @@
 
 (function() { "use strict"
 const GITHUB_PAGE = "https://github.com/rbertus2000/sd-ui-plugins"
-const VERSION = "1.0.14";
+const VERSION = "1.0.15";
 const ID_PREFIX = "history-plugin";
 const GITHUB_ID = "rbertus2000-plugins"
 console.log('%s Version: %s', ID_PREFIX, VERSION);
@@ -224,6 +224,8 @@ style.textContent = `
         seedField.value = stateObject.seed;
         seedField.disabled = stateObject.random;
         randomSeedField.checked = stateObject.random;
+        numOutputsTotalField.value = stateObject.numOutputsTotal===undefined ? 1 : stateObject.numOutputsTotal;
+        numOutputsParallelField.value = stateObject.numOutputsParallel===undefined ? 1 : stateObject.numOutputsParallel;
         stableDiffusionModelField.value = stateObject.model;
         vaeModelField.value = stateObject.vae;
         samplerField.value = stateObject.sampler;
@@ -263,6 +265,8 @@ style.textContent = `
         let stateObject = {
             prompt: prompts,
             seed: seedField.value,
+            numOutputsTotal: numOutputsTotalField.value,
+            numOutputsParallel: numOutputsParallelField.value,
             random: randomSeedField.checked,
             model: stableDiffusionModelField.value,
             vae: vaeModelField.value,
